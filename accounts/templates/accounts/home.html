@@ -1,0 +1,80 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Manager</title>
+</head>
+<body>
+
+    <h1>Менеджер проектов</h1>
+
+    <h2>Добро пожаловать, {{ user.username }}!</h2>
+    <p>Вы успешно вошли в систему.</p>
+
+    <h3>Главное меню</h3>
+
+    <ul>
+        <li><a href="#projects">Мои проекты</a></li>
+        <li><a href="#tasks">Мои задачи</a></li>
+        <li><a href="#comments">Комментарии</a></li>
+    </ul>
+
+    <h2 id="projects">Мои проекты</h2>
+
+    {% for project in projects %}
+        <p>{{ project.name }}</p>
+    {% empty %}
+        <p>У вас пока нет проектов.</p>
+    {% endfor %}
+
+    <h2 id="tasks">Мои задачи</h2>
+
+    {% for task in tasks %}
+        <div>
+            <h3>{{ task.title }}</h3>
+
+            <p>Проект: {{ task.project.name }}</p>
+
+            <p>Описание: {{ task.description }}</p>
+
+            <p>Статус: {{ task.get_status_display }}</p>
+
+            <h4 id="comments">Комментарии:</h4>
+
+            {% for comment in task.comments.all %}
+                <p>
+                    <strong>{{ comment.author.username }}</strong>:
+                    {{ comment.text }}
+                </p>
+            {% empty %}
+                <p>Комментариев пока нет.</p>
+            {% endfor %}
+
+            <h4>Добавить комментарий:</h4>
+
+            <form method="post" action="{% url 'add_comment' task.id %}">
+                {% csrf_token %}
+
+                <textarea
+                    name="text"
+                    rows="3"
+                    placeholder="Напишите комментарий..."
+                    required
+                ></textarea>
+
+                <br>
+
+                <button type="submit">
+                    Отправить комментарий
+                </button>
+            </form>
+
+        </div>
+    {% empty %}
+        <p>У вас пока нет задач.</p>
+    {% endfor %}
+
+</body>
+</html>
